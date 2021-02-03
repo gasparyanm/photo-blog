@@ -13,9 +13,26 @@ class ImageController extends Controller
     {
         $filterParams = $request->all()['search'];
 
-        $images = Image::with('user')
-            ->filter(['name' => $filterParams['value']])->paginate();
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // Rows display per page
 
-        return ImageResource::collection($images);
+        $totalImages = Image::with('user')
+            ->filter(['name' => $filterParams['value']])->count();
+        $totalImagesWithFilter = Image::with('user')
+            ->filter(['name' => $filterParams['value']])->count();
+
+        $images = Image::with('user')
+            ->filter(['name' => $filterParams['value']])
+            ->skip($start)
+            ->take($rowperpage)
+            ->get();
+
+        return array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalImages,
+            "iTotalDisplayRecords" => $totalImagesWithFilter,
+            "aaData" => ImageResource::collection($images)
+        );
     }
 }
