@@ -1,5 +1,4 @@
 # TASK DESCRIPTION
--------------
 
 * Make tables for users and theirs images
 * Generate custom data for users and images
@@ -8,10 +7,15 @@
 
 
 # SET UP PROJECT
--------------
+
 ### Clone project 
 ```git
-git clone 
+git clone https://github.com/gasparyanm/photo-blog.git
+```
+
+### install composer
+```composer
+composer install
 ```
 
 ### Set up configuration of DB in .env file
