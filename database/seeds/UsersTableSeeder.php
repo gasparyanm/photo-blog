@@ -1,12 +1,11 @@
 <?php
 
+use App\Image;
 use App\User;
 use Illuminate\Database\Seeder;
 
 class UsersTableSeeder extends Seeder
 {
-    CONST DEFAULT_USERS_COUNT = 10;
-
     /**
      * Run the database seeds.
      *
@@ -14,6 +13,8 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(User::class, self::DEFAULT_USERS_COUNT)->create();
+        factory(User::class, 10)->create()->each(function ($user) {
+            factory(Image::class, 10)->create(['user_id' => $user->id]);
+        });
     }
 }

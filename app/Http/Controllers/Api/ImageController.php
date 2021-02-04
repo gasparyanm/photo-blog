@@ -5,34 +5,27 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ImageResource;
 use App\Image;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * @param Request $request
+     * @param ImageService $service
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index(Request $request, ImageService $service)
     {
-        $filterParams = $request->all()['search'];
+        $totalImages = $service->allImagesCount();
+        $totalImagesWithFilter = $service->filteredImagesCount($request);
+        $images = $service->getFilteredImagesWithLimit($request);
 
-        $draw = $request->get('draw');
-        $start = $request->get("start");
-        $rowperpage = $request->get("length"); // Rows display per page
-
-        $totalImages = Image::with('user')
-            ->filter(['name' => $filterParams['value']])->count();
-        $totalImagesWithFilter = Image::with('user')
-            ->filter(['name' => $filterParams['value']])->count();
-
-        $images = Image::with('user')
-            ->filter(['name' => $filterParams['value']])
-            ->skip($start)
-            ->take($rowperpage)
-            ->get();
-
-        return array(
-            "draw" => intval($draw),
+        return response()->json([
+            "draw" => intval($request->get('draw')),
             "iTotalRecords" => $totalImages,
             "iTotalDisplayRecords" => $totalImagesWithFilter,
             "aaData" => ImageResource::collection($images)
-        );
+        ], 200);
     }
 }
